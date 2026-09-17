@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — BuildSA{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Welcome, {{ current_user.full_name or current_user.username }} 👋
+        {% if current_user.is_verified_builder %}<span class="badge badge-verified ms-2"><i class="fas fa-circle-check"></i> Verified Builder</span>{% endif %}
+    </h2>
+    <a href="{{ url_for('feed.create_post') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>New Post</a>
+</div>
+
+{% if notifications %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between">
+        <span><i class="fas fa-bell me-2"></i>Notifications</span>
+        <form method="POST" action="{{ url_for('dashboard.mark_notifications_read') }}" class="d-inline">
+            <button class="btn btn-sm btn-outline-secondary">Mark all read</button>
+        </form>
+    </div>
+    <div class="card-body">
+        {% for n in notifications %}
+        <div class="alert alert-{{ n.type }} mb-2 py-2">
+            <strong>{{ n.title }}</strong> — {{ n.message }}
+            {% if n.link %}<a href="{{ n.link }}" class="ms-2">Open</a>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card p-3 text-center" style="background: var(--brand); color: #fff;">
+        <h6 class="mb-1">Posts</h6><h2 class="mb-0">{{ posts|length }}</h2>
+    </div></div>
+    <div class="col-md-3"><div class="card p-3 text-center" style="background:#10b981; color:#fff;">
+        <h6 class="mb-1">Prices Shared</h6><h2 class="mb-0">{{ my_materials|length }}</h2>
+    </div></div>
+    <div class="col-md-3"><div class="card p-3 text-center" style="background:#6366f1; color:#fff;">
+        <h6 class="mb-1">Unread Messages</h6><h2 class="mb-0">{{ unread_msgs }}</h2>
+    </div></div>
+    <div class="col-md-3"><div class="card p-3 text-center" style="background:#f59e0b; color:#fff;">
+        <h6 class="mb-1">Notifications</h6><h2 class="mb-0">{{ notifications|length }}</h2>
+    </div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span><i class="fas fa-newspaper me-2"></i>My Recent Posts</span>
+                <a href="{{ url_for('feed.feed') }}" class="small">View all</a>
+            </div>
+            <div class="card-body">
+                {% if posts %}
+                    {% for p in posts %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <a href="{{ url_for('feed.view_post', post_id=p.id) }}" class="fw-semibold text-decoration-none">{{ p.title or p.content[:50] }}</a>
+                        <div class="post-meta">{{ p.created_at.strftime('%Y-%m-%d') }} · {{ p.category|title }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">No posts yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span><i class="fas fa-tags me-2"></i>My Recent Prices</span>
+                <a href="{{ url_for('materials.add') }}" class="small">+ Add price</a>
+            </div>
+            <div class="card-body">
+                {% if my_materials %}
+                    {% for m in my_materials %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <strong>{{ m.material_name }}</strong> — R{{ '%.2f' % m.price }} {{ m.unit }}
+                        <div class="post-meta">{{ m.province or '' }} {{ m.created_at.strftime('%Y-%m-%d') }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">No prices submitted yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if follow_feed %}
+<div class="card mt-4">
+    <div class="card-header"><i class="fas fa-user-group me-2"></i>From Builders You Follow</div>
+    <div class="card-body">
+        {% for p in follow_feed %}
+        <div class="border-bottom pb-2 mb-2">
+            <a href="{{ url_for('feed.view_post', post_id=p.id) }}" class="fw-semibold text-decoration-none">{{ p.title or p.content[:60] }}</a>
+            <div class="post-meta">by {{ p.author.username }} · {{ p.created_at.strftime('%Y-%m-%d') }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{{ url_for('dashboard.edit_profile') }}" class="btn btn-outline-secondary"><i class="fas fa-edit me-1"></i>Edit Profile</a>
+</div>
+
+{% endblock %}

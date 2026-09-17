@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }} — BuildSA{% endblock %}
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex align-items-start">
+            <div class="avatar-circle me-3" style="width:72px;height:72px;font-size:1.5rem;">{{ user.username[0]|upper }}</div>
+            <div class="flex-grow-1">
+                <h3 class="mb-1">{{ user.full_name or user.username }}
+                    {% if user.is_verified_builder %}<span class="badge badge-verified ms-2"><i class="fas fa-circle-check"></i> Verified</span>{% endif %}
+                </h3>
+                <div class="text-muted">
+                    {{ user.profession or 'Member' }}
+                    {% if user.city or user.province %} · {{ user.city }}{% if user.city and user.province %},{% endif %} {{ user.province }}{% endif %}
+                </div>
+                {% if user.bio %}<p class="mt-2 mb-2">{{ user.bio }}</p>{% endif %}
+                <div class="mt-2 small text-muted">
+                    <span class="me-3"><strong>{{ followers_count }}</strong> followers</span>
+                    <span><strong>{{ following_count }}</strong> following</span>
+                </div>
+            </div>
+            {% if user.id != current_user.id %}
+            <div>
+                <form method="POST" action="{{ url_for('dashboard.follow', username=user.username) }}" class="d-inline">
+                    <button class="btn btn-{{ 'outline-secondary' if is_following else 'primary' }}">
+                        {% if is_following %}<i class="fas fa-check"></i> Following{% else %}<i class="fas fa-plus"></i> Follow{% endif %}
+                    </button>
+                </form>
+                <a href="{{ url_for('messages.chat', username=user.username) }}" class="btn btn-outline-primary"><i class="fas fa-envelope"></i> Message</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">Posts by {{ user.username }}</h4>
+{% if posts %}
+    {% for p in posts %}
+    <div class="post-card">
+        <div class="post-header">
+            <div class="avatar-circle">{{ user.username[0]|upper }}</div>
+            <div>
+                <strong>{{ user.username }}</strong>
+                <div class="post-meta">{{ p.created_at.strftime('%Y-%m-%d %H:%M') }} ·
+                    <span class="category-chip cat-{{ p.category }}">{{ p.category }}</span>
+                </div>
+            </div>
+        </div>
+        {% if p.title %}<h5><a href="{{ url_for('feed.view_post', post_id=p.id) }}" class="text-decoration-none text-dark">{{ p.title }}</a></h5>{% endif %}
+        <p>{{ p.content[:200] }}{% if p.content|length > 200 %}…{% endif %}</p>
+        <a href="{{ url_for('feed.view_post', post_id=p.id) }}" class="btn btn-sm btn-outline-primary">Read more</a>
+    </div>
+    {% endfor %}
+{% else %}
+<p class="text-muted">No posts yet.</p>
+{% endif %}
+{% endblock %}

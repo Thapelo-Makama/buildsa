@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Feed — BuildSA{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="fas fa-newspaper me-2" style="color:#ea580c;"></i>Community Feed</h2>
+    <a href="{{ url_for('feed.create_post') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>New Post</a>
+</div>
+
+<form method="GET" class="row g-2 mb-4">
+    <div class="col-md-5">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            <option value="general" {% if category == 'general' %}selected{% endif %}>General</option>
+            <option value="question" {% if category == 'question' %}selected{% endif %}>Questions</option>
+            <option value="project" {% if category == 'project' %}selected{% endif %}>Projects</option>
+            <option value="ad" {% if category == 'ad' %}selected{% endif %}>Advertise Services</option>
+            <option value="material" {% if category == 'material' %}selected{% endif %}>Materials</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <select name="province" class="form-select" onchange="this.form.submit()">
+            <option value="">All provinces</option>
+            {% for prov in ['Gauteng','Western Cape','KwaZulu-Natal','Eastern Cape','Free State','Limpopo','Mpumalanga','North West','Northern Cape'] %}
+            <option value="{{ prov }}" {% if province == prov %}selected{% endif %}>{{ prov }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3"><button class="btn btn-outline-primary w-100">Filter</button></div>
+</form>
+
+{% if posts %}
+    {% for p in posts %}
+    <div class="post-card">
+        {% if p.is_pinned %}<span class="badge badge-admin mb-2"><i class="fas fa-thumbtack"></i> Pinned</span>{% endif %}
+        <div class="post-header">
+            <a href="{{ url_for('dashboard.view_profile', username=p.author.username) }}">
+                <div class="avatar-circle">{{ p.author.username[0]|upper }}</div>
+            </a>
+            <div>
+                <a href="{{ url_for('dashboard.view_profile', username=p.author.username) }}" class="fw-semibold text-dark text-decoration-none">
+                    {{ p.author.full_name or p.author.username }}
+                </a>
+                {% if p.author.is_verified_builder %}<i class="fas fa-circle-check text-success" title="Verified Builder"></i>{% endif %}
+                <div class="post-meta">{{ p.created_at.strftime('%Y-%m-%d %H:%M') }} · <span class="category-chip cat-{{ p.category }}">{{ p.category }}</span>
+                    {% if p.province %} · <i class="fas fa-map-marker-alt"></i> {{ p.province }}{% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if p.title %}<h5><a href="{{ url_for('feed.view_post', post_id=p.id) }}" class="text-decoration-none text-dark">{{ p.title }}</a></h5>{% endif %}
+        <p>{{ p.content[:300] }}{% if p.content|length > 300 %}…{% endif %}</p>
+
+        {% if p.image_path %}
+        <img src="{{ url_for('static', filename='uploads/' + p.image_path) }}" class="img-fluid rounded mb-2" style="max-height:400px;">
+        {% endif %}
+        {% if p.video_path %}
+        <video controls class="img-fluid rounded mb-2" style="max-height:400px;">
+            <source src="{{ url_for('static', filename='uploads/' + p.video_path) }}">
+        </video>
+        {% endif %}
+
+        <a href="{{ url_for('feed.view_post', post_id=p.id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-comment"></i> View / Comment</a>
+        {% if p.user_id == current_user.id or current_user.is_admin %}
+        <form method="POST" action="{{ url_for('feed.delete_post', post_id=p.id) }}" class="d-inline" onsubmit="return confirm('Delete this post?')">
+            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+    <p class="text-muted">No posts yet. Be the first to share!</p>
+    <a href="{{ url_for('feed.create_post') }}" class="btn btn-primary">Create a Post</a>
+</div>
+{% endif %}
+
+{% endblock %}

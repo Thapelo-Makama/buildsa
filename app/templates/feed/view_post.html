@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title or 'Post' }} — BuildSA{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-9">
+
+<div class="post-card">
+    <div class="post-header">
+        <a href="{{ url_for('dashboard.view_profile', username=post.author.username) }}">
+            <div class="avatar-circle">{{ post.author.username[0]|upper }}</div>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard.view_profile', username=post.author.username) }}" class="fw-semibold text-dark text-decoration-none">
+                {{ post.author.full_name or post.author.username }}
+            </a>
+            {% if post.author.is_verified_builder %}<i class="fas fa-circle-check text-success"></i>{% endif %}
+            <div class="post-meta">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }} · <span class="category-chip cat-{{ post.category }}">{{ post.category }}</span>
+                {% if post.province %} · <i class="fas fa-map-marker-alt"></i> {{ post.province }}{% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if post.title %}<h3>{{ post.title }}</h3>{% endif %}
+    <p style="white-space:pre-wrap;">{{ post.content }}</p>
+
+    {% if post.image_path %}
+    <img src="{{ url_for('static', filename='uploads/' + post.image_path) }}" class="img-fluid rounded mb-3">
+    {% endif %}
+    {% if post.video_path %}
+    <video controls class="img-fluid rounded mb-3">
+        <source src="{{ url_for('static', filename='uploads/' + post.video_path) }}">
+    </video>
+    {% endif %}
+
+    {% if post.user_id == current_user.id or current_user.is_admin %}
+    <form method="POST" action="{{ url_for('feed.delete_post', post_id=post.id) }}" class="mt-2" onsubmit="return confirm('Delete?')">
+        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i> Delete Post</button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-comments me-2"></i>Comments ({{ post.comments|length }})</div>
+    <div class="card-body">
+    {% if post.comments %}
+        {% for c in post.comments %}
+        <div class="border-bottom pb-2 mb-2">
+            <strong>{{ c.author.username }}</strong>
+            <span class="post-meta ms-2">{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            <p class="mb-1 mt-1">{{ c.content }}</p>
+            {% if c.user_id == current_user.id or current_user.is_admin %}
+            <form method="POST" action="{{ url_for('feed.delete_comment', comment_id=c.id) }}" class="d-inline" onsubmit="return confirm('Delete comment?')">
+                <button class="btn btn-sm btn-link text-danger p-0"><i class="fas fa-trash"></i></button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No comments yet.</p>
+    {% endif %}
+
+    <form method="POST" class="mt-3">
+        {{ form.hidden_tag() }}
+        <div class="mb-2">{{ form.content(class="form-control", rows=2, placeholder="Write a comment…") }}</div>
+        {{ form.submit(class="btn btn-primary btn-sm") }}
+    </form>
+    </div>
+</div>
+
+</div></div>
+{% endblock %}

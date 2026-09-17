@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Manage Users — BuildSA{% endblock %}
+{% block content %}
+
+<h2 class="mb-4"><i class="fas fa-users me-2" style="color:#ea580c;"></i>Manage Users</h2>
+
+<div class="card mb-4">
+    <div class="card-header" style="background:#f59e0b; color:#fff;">
+        <i class="fas fa-user-clock me-2"></i>Pending Approval ({{ pending|length }})
+    </div>
+    <div class="card-body">
+        {% if pending %}
+        <table class="table align-middle">
+            <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Profession</th><th>Registered</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for u in pending %}
+            <tr>
+                <td><strong>{{ u.username }}</strong></td>
+                <td>{{ u.full_name }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.profession or '—' }}</td>
+                <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin.approve_user', uid=u.id) }}" class="d-inline">
+                        <button class="btn btn-sm btn-success"><i class="fas fa-check"></i> Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.reject_user', uid=u.id) }}" class="d-inline" onsubmit="return confirm('Reject and remove?')">
+                        <button class="btn btn-sm btn-danger"><i class="fas fa-times"></i> Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">No pending users.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="fas fa-users me-2"></i>All Verified Users</div>
+    <div class="card-body">
+        <table class="table align-middle">
+            <thead><tr><th>Username</th><th>Name</th><th>Province</th><th>Role</th><th>Verified Builder</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for u in users %}
+            <tr>
+                <td><strong>{{ u.username }}</strong>
+                    {% if u.is_banned %}<span class="badge bg-danger">Banned</span>{% endif %}
+                </td>
+                <td>{{ u.full_name }}</td>
+                <td>{{ u.province or '—' }}</td>
+                <td>
+                    {% if u.is_admin %}<span class="badge badge-admin">Admin</span>
+                    {% else %}<span class="badge bg-secondary">User</span>{% endif %}
+                </td>
+                <td>
+                    {% if u.is_verified_builder %}<span class="badge badge-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                    {% else %}<span class="text-muted small">Not verified</span>{% endif %}
+                </td>
+                <td>
+                    {% if u.id != current_user.id %}
+                    <form method="POST" action="{{ url_for('admin.toggle_verified_badge', uid=u.id) }}" class="d-inline">
+                        <button class="btn btn-sm btn-outline-success" title="Toggle verified badge">
+                            <i class="fas fa-circle-check"></i>
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.make_admin', uid=u.id) }}" class="d-inline">
+                        <button class="btn btn-sm btn-outline-primary" title="Toggle admin">
+                            <i class="fas fa-user-shield"></i>
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.ban_user', uid=u.id) }}" class="d-inline">
+                        <button class="btn btn-sm btn-outline-{{ 'success' if u.is_banned else 'warning' }}" title="Ban/Unban">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

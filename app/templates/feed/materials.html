@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Material Prices — BuildSA{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="fas fa-tags me-2" style="color:#ea580c;"></i>Material Prices</h2>
+    <a href="{{ url_for('materials.add') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Add a Price</a>
+</div>
+
+<form method="GET" class="row g-2 mb-4">
+    <div class="col-md-6"><input type="text" name="q" class="form-control" placeholder="Search material (brick, cement, sand…)" value="{{ search }}"></div>
+    <div class="col-md-4">
+        <select name="province" class="form-select">
+            <option value="">All provinces</option>
+            {% for prov in ['Gauteng','Western Cape','KwaZulu-Natal','Eastern Cape','Free State','Limpopo','Mpumalanga','North West','Northern Cape'] %}
+            <option value="{{ prov }}" {% if province == prov %}selected{% endif %}>{{ prov }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2"><button class="btn btn-outline-primary w-100">Search</button></div>
+</form>
+
+{% if agg %}
+<div class="card mb-4">
+    <div class="card-header"><i class="fas fa-chart-line me-2"></i>Average Prices (community-submitted)</div>
+    <div class="card-body">
+    <table class="table table-sm mb-0">
+        <thead><tr><th>Material</th><th>Min</th><th>Average</th><th>Max</th><th>Reports</th></tr></thead>
+        <tbody>
+        {% for a in agg %}
+        <tr>
+            <td><strong>{{ a[0] }}</strong></td>
+            <td>R{{ '%.2f' % a[2] }}</td>
+            <td>R{{ '%.2f' % a[1] }}</td>
+            <td>R{{ '%.2f' % a[3] }}</td>
+            <td>{{ a[4] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endif %}
+
+<h5 class="mb-3">Recent Submissions</h5>
+{% if materials %}
+    {% for m in materials %}
+    <div class="card mb-2">
+        <div class="card-body py-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <strong>{{ m.material_name }}</strong> — <span style="color:#ea580c; font-weight:600;">R{{ '%.2f' % m.price }} {{ m.unit }}</span>
+                    <div class="post-meta">
+                        {% if m.supplier %}{{ m.supplier }} · {% endif %}
+                        {% if m.city %}{{ m.city }}, {% endif %}{{ m.province or '' }} ·
+                        by {{ m.submitter.username }} on {{ m.created_at.strftime('%Y-%m-%d') }}
+                    </div>
+                    {% if m.notes %}<div class="small mt-1">{{ m.notes }}</div>{% endif %}
+                </div>
+                {% if m.user_id == current_user.id or current_user.is_admin %}
+                <form method="POST" action="{{ url_for('materials.delete', mid=m.id) }}" onsubmit="return confirm('Remove?')">
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<p class="text-muted">No prices yet. Be the first to share one!</p>
+{% endif %}
+
+{% endblock %}

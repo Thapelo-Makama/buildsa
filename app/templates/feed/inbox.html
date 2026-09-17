@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Messages — BuildSA{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="fas fa-envelope me-2" style="color:#ea580c;"></i>Messages</h2>
+    <a href="{{ url_for('messages.new_message') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>New Message</a>
+</div>
+
+{% if partners %}
+<div class="card">
+    <div class="card-body">
+    {% for p in partners %}
+    <a href="{{ url_for('messages.chat', username=p.username) }}" class="text-decoration-none text-dark">
+        <div class="d-flex align-items-center border-bottom py-3">
+            <div class="avatar-circle me-3">{{ p.username[0]|upper }}</div>
+            <div class="flex-grow-1">
+                <strong>{{ p.full_name or p.username }}</strong>
+                {% if p.is_verified_builder %}<i class="fas fa-circle-check text-success"></i>{% endif %}
+                <div class="text-muted small">{{ p.profession or 'Builder' }} · {{ p.province or '' }}</div>
+            </div>
+            <i class="fas fa-chevron-right text-muted"></i>
+        </div>
+    </a>
+    {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-envelope-open fa-3x text-muted mb-3"></i>
+    <p class="text-muted">No conversations yet.</p>
+    <a href="{{ url_for('messages.new_message') }}" class="btn btn-primary">Start a Conversation</a>
+</div>
+{% endif %}
+{% endblock %}

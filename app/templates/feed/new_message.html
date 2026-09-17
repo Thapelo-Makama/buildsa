@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}New Message — BuildSA{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6">
+<div class="card">
+    <div class="card-header"><h5 class="mb-0"><i class="fas fa-paper-plane me-2"></i>New Message</h5></div>
+    <div class="card-body">
+    <form method="POST">{{ form.hidden_tag() }}
+        <div class="mb-3">{{ form.recipient_id.label(class="form-label") }}{{ form.recipient_id(class="form-select") }}</div>
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('messages.inbox') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+    </div>
+</div>
+</div></div>
+{% endblock %}

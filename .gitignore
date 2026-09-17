@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.local.backup
+instance/
+logs/
+.vscode/
+.idea/
+*.sqlite
+*.db
+docs/screenshots/*.tmp

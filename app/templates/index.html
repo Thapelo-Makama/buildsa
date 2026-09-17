@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}BuildSA — South African Builders Platform{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-3 fw-bold"><span style="background: var(--brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Build</span> Together, Build Smarter</h1>
+    <p class="lead text-muted mb-4">The community platform for South African builders, contractors, and homeowners.</p>
+    {% if not current_user.is_authenticated %}
+    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-4 me-2"><i class="fas fa-user-plus me-2"></i>Join BuildSA</a>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-dark btn-lg px-4">Login</a>
+    {% else %}
+    <a href="{{ url_for('feed.feed') }}" class="btn btn-primary btn-lg px-4 me-2"><i class="fas fa-newspaper me-2"></i>Go to Feed</a>
+    <a href="{{ url_for('materials.index') }}" class="btn btn-outline-dark btn-lg px-4">Material Prices</a>
+    {% endif %}
+</div>
+
+<div class="row mt-4 g-4">
+    <div class="col-md-4"><div class="card p-4 h-100 text-center">
+        <i class="fas fa-newspaper fa-3x mb-3" style="color:#ea580c;"></i>
+        <h5>Community Feed</h5>
+        <p class="text-muted">Ask questions, showcase projects, or advertise your building services.</p>
+    </div></div>
+    <div class="col-md-4"><div class="card p-4 h-100 text-center">
+        <i class="fas fa-tags fa-3x mb-3" style="color:#ea580c;"></i>
+        <h5>Material Prices</h5>
+        <p class="text-muted">See real prices from Cashbuild, Builders, and other SA suppliers — shared by builders.</p>
+    </div></div>
+    <div class="col-md-4"><div class="card p-4 h-100 text-center">
+        <i class="fas fa-robot fa-3x mb-3" style="color:#ea580c;"></i>
+        <h5>AI Assistant</h5>
+        <p class="text-muted">Ask how many bricks for your house, cement bags needed, or house plan costs.</p>
+    </div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ partner.username }} — BuildSA{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-8">
+
+<div class="card mb-3">
+    <div class="card-body py-2 d-flex align-items-center">
+        <div class="avatar-circle me-3">{{ partner.username[0]|upper }}</div>
+        <div class="flex-grow-1">
+            <strong>{{ partner.full_name or partner.username }}</strong>
+            {% if partner.is_verified_builder %}<i class="fas fa-circle-check text-success"></i>{% endif %}
+            <div class="text-muted small">{{ partner.profession or 'Builder' }} · {{ partner.province or '' }}</div>
+        </div>
+        <a href="{{ url_for('dashboard.view_profile', username=partner.username) }}" class="btn btn-sm btn-outline-secondary">View Profile</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="max-height:500px; overflow-y:auto;">
+    {% if thread %}
+        {% for m in thread %}
+        <div class="mb-3 d-flex {% if m.sender_id == current_user.id %}justify-content-end{% endif %}">
+            <div class="p-2 px-3 rounded" style="max-width:75%;
+                 {% if m.sender_id == current_user.id %}background: var(--brand); color:#fff;{% else %}background:#f1f5f9;{% endif %}">
+                {{ m.content }}
+                <div class="small mt-1" style="opacity:.75;">{{ m.timestamp.strftime('%H:%M · %d %b') }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted text-center">No messages yet. Say hi 👋</p>
+    {% endif %}
+    </div>
+
+    <div class="card-footer">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="input-group">
+            {{ form.content(class="form-control", rows=1, placeholder="Type a message…") }}
+            <button class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </form>
+    </div>
+</div>
+
+</div></div>
+{% endblock %}

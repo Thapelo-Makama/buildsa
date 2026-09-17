@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile — BuildSA{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-8">
+<div class="card">
+    <div class="card-header"><h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>Edit Profile</h5></div>
+    <div class="card-body">
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-md-6 mb-3">{{ form.full_name.label(class="form-label") }}{{ form.full_name(class="form-control") }}</div>
+            <div class="col-md-6 mb-3">{{ form.phone_number.label(class="form-label") }}{{ form.phone_number(class="form-control") }}</div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">{{ form.city.label(class="form-label") }}{{ form.city(class="form-control") }}</div>
+            <div class="col-md-6 mb-3">{{ form.province.label(class="form-label") }}{{ form.province(class="form-select") }}</div>
+        </div>
+        <div class="mb-3">{{ form.profession.label(class="form-label") }}{{ form.profession(class="form-control") }}</div>
+        <div class="mb-3">{{ form.bio.label(class="form-label") }}{{ form.bio(class="form-control", rows=3) }}</div>
+        <div class="mb-3">{{ form.profile_picture.label(class="form-label") }}{{ form.profile_picture(class="form-control") }}</div>
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('dashboard.user_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+    </div>
+</div>
+</div></div>
+{% endblock %}
