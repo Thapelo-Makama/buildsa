@@ -72,3 +72,33 @@ MIT © Thapelo Makama
 ### AI Assistant
 ![AI](docs/screenshots/AI.png)
 
+
+## 📸 Screenshots
+
+### Landing Page
+![Homepage](docs/screenshots/Home_Page.png)
+
+### Registration with Admin Approval
+![Register](docs/screenshots/Register.png)
+
+### Login
+![Login](docs/screenshots/Login.png)
+
+### Admin — Manage Users & Approvals
+![Manage Users](docs/screenshots/Manage_Users.png)
+
+### Community Feed
+![Feed](docs/screenshots/FeedBack.png)
+
+### Material Prices (Community-Aggregated)
+![Materials](docs/screenshots/Material_prices.png)
+
+### Share a Material Price
+![Add Price](docs/screenshots/AddPrices.png)
+
+### User Dashboard
+![User Dashboard](docs/screenshots/user_dashBoard.png)
+
+### AI Assistant
+![AI](docs/screenshots/AI.png)
+
